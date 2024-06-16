@@ -15,10 +15,10 @@ def create_app():
 
     swagger_config(app)
 
-    SWAGGER_URL = "/swagger-ui"
-    API_URL = "/swagger"
+    SWAGGER_URL = app.config["SWAGGER_URL"]
+    SWAGGER_API_URL = app.config["SWAGGER_API_URL"]
     swaggerui_blueprint = get_swaggerui_blueprint(
-        SWAGGER_URL, API_URL, config={"app_name": "Flask Web API"}
+        SWAGGER_URL, SWAGGER_API_URL, config={"app_name": "Flask Web API"}
     )
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
