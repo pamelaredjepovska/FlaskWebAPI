@@ -45,13 +45,8 @@ def register_swagger(app: Flask) -> None:
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 
-def get_db_connection():
-    # conn = psycopg.connect(app.config["db_pool"])
-    # db_pool = app.config["db_pool"]
-    # with db_pool.connection() as conn:
-    #     conn.autocommit = autocommit
-    #     yield conn
-    return current_app.config["db_pool"].getconn()
+def get_db_connection(db_pool: ConnectionPool):
+    return db_pool.connection()
 
 
 def initialize_db_pool(app: Flask) -> ConnectionPool:
