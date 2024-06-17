@@ -1,6 +1,9 @@
 import psycopg
-from flask import Flask, app
+from flask import Flask, app, current_app
 from flask_swagger_ui import get_swaggerui_blueprint
+from psycopg.conninfo import make_conninfo
+from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 
 
 def create_app():
@@ -17,6 +20,8 @@ def create_app():
     # Register blueprints
     register_main_api(app)
     register_swagger(app)
+
+    app.config.update({"db_pool": initialize_db_pool(app)})
 
     return app
 
@@ -41,5 +46,32 @@ def register_swagger(app: Flask) -> None:
 
 
 def get_db_connection():
-    conn = psycopg.connect(app.config["DATABASE_URL"])
-    return conn
+    # conn = psycopg.connect(app.config["db_pool"])
+    # db_pool = app.config["db_pool"]
+    # with db_pool.connection() as conn:
+    #     conn.autocommit = autocommit
+    #     yield conn
+    return current_app.config["db_pool"].getconn()
+
+
+def initialize_db_pool(app: Flask) -> ConnectionPool:
+    """
+    Create an instance of a threaded psycopg3 pool.
+    https://www.psycopg.org/psycopg3/docs/api/pool.html#psycopg_pool.ConnectionPool
+    """
+
+    conninfo = make_conninfo(
+        user=app.config["DB_USER"],
+        password=app.config["DB_PASSWORD"],
+        host=app.config["DB_HOST"],
+        port=5432,
+        dbname=app.config["DB_NAME"],
+    )
+
+    # return psycopg3 database pool instance
+    return ConnectionPool(
+        conninfo=conninfo,
+        min_size=app.config.get("DB_POOL_MIN_CONN", 1),
+        max_size=app.config.get("DB_POOL_MAX_CONN", 2),
+        kwargs={"row_factory": dict_row},
+    )
