@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify
 
-main_api = Blueprint("main_api", __name__)
+from src.main_api import main_api_blueprint as bp
 
 
-@main_api.route("/health")
+@bp.route("/health")
 def health_check():
     return jsonify({"status": "Healthy"}), 200

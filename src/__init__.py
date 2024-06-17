@@ -4,13 +4,30 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 
 def create_app():
+    """Create and configure the Flask app
+
+    Returns:
+        app (Flask): Flask app
+    """
+
+    # Create a Flask app instance and apply app config
     app = Flask(__name__)
     app.config.from_object("config.Config")
 
-    from .main_api.routes.health_check import main_api
+    # Register blueprints
+    register_main_api(app)
+    register_swagger(app)
 
-    app.register_blueprint(main_api, url_prefix="/main_api")
+    return app
 
+
+def register_main_api(app: Flask) -> None:
+    from src.main_api import main_api_blueprint
+
+    app.register_blueprint(main_api_blueprint, url_prefix="/main_api")
+
+
+def register_swagger(app: Flask) -> None:
     from .swagger import swagger_config
 
     swagger_config(app)
@@ -21,8 +38,6 @@ def create_app():
         SWAGGER_URL, SWAGGER_API_URL, config={"app_name": "Flask Web API"}
     )
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-
-    return app
 
 
 def get_db_connection():
