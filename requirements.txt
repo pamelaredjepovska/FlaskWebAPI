@@ -1,3 +1,4 @@
+annotated-types==0.7.0
 backports.zoneinfo==0.2.1
 blinker==1.8.2
 click==8.1.7
@@ -12,6 +13,8 @@ marshmallow==3.21.3
 packaging==24.1
 psycopg==3.1.19
 psycopg-pool==3.2.2
+pydantic==2.7.4
+pydantic-core==2.18.4
 python-dotenv==1.0.1
 typing-extensions==4.12.2
 werkzeug==3.0.3
