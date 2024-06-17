@@ -8,10 +8,6 @@ from src.main_api import main_api_blueprint as bp
 @bp.route("/company")
 def get_company():
     try:
-        #  Only allow GET requests
-        if request.method != "GET":
-            return jsonify({"error": "Method not allowed"}), 405  # Method Not Allowed
-
         db_pool = current_app.config["db_pool"]
         query = "SELECT ARRAY_AGG(name) AS companies FROM company"
         with get_db_connection(db_pool) as conn:
