@@ -1,5 +1,4 @@
-import psycopg
-from flask import Flask, app, current_app
+from flask import Flask
 from flask_swagger_ui import get_swaggerui_blueprint
 from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
