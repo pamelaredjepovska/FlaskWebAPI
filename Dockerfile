@@ -15,6 +15,9 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
+# Create logs directory and set permissions
+RUN mkdir -p /flaskwebapi/logs && chmod -R 777 /flaskwebapi/logs
+
 # Expose the port the app runs on
 EXPOSE 5000
 

@@ -4,6 +4,9 @@ from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
+from src.errors import register_error_handlers
+from src.logger import setup_logging
+
 
 def create_app():
     """Create and configure the Flask app
@@ -16,9 +19,19 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")
 
+    # Setup logging
+    logger = setup_logging()
+    app.logger.addHandler(logger)
+    app.logger.debug(
+        "App logger initialized"
+    )  # Debug message to ensure logger is initialized
+
     # Register blueprints
     register_main_api(app)
     register_swagger(app)
+
+    # Register error handlers
+    register_error_handlers(app)
 
     app.config.update({"db_pool": initialize_db_pool(app)})
 
