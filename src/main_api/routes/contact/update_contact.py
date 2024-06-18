@@ -25,12 +25,6 @@ def update_contact():
             )
             abort(400, description=json.loads(e.json()))
 
-        print(f"contact_data = {contact_data}")
-        # Perform update query
-        db_pool = current_app.config["db_pool"]
-        update_query = (
-            """UPDATE contact SET {set_clause} WHERE id = %(contact_id)s RETURNING *"""
-        )
         # Build the SET clause dynamically
         set_clauses = []
         update_query_params = {"contact_id": args.id}
@@ -61,6 +55,8 @@ def update_contact():
             """UPDATE contact SET {set_clause} WHERE id = %(contact_id)s RETURNING *"""
         ).format(set_clause=sql.SQL(set_clause))
 
+        # Perform update query
+        db_pool = current_app.config["db_pool"]
         with get_db_connection(db_pool) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(update_query, update_query_params)
