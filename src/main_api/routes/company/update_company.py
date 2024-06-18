@@ -12,14 +12,17 @@ from src.main_api import main_api_blueprint as bp
 def update_company():
     try:
         if not (json_payload := request.get_json(silent=True)):
-            abort(400, "Missing JSON In Request")
+            abort(400, description="Missing JSON In Request")
 
         # Validate the request arguments and JSON payload
         try:
             args = CompanyParams(**request.args.to_dict())
             company_data = CompanyInput(**json_payload)
         except ValidationError as e:
-            abort(400, json.loads(e.json()))
+            current_app.logger.debug(
+                "%s : Validation error in %s", str(e), request.endpoint
+            )
+            abort(400, description=json.loads(e.json()))
 
         # Perform update query
         db_pool = current_app.config["db_pool"]
@@ -32,15 +35,15 @@ def update_company():
 
                 # If there is not record with that ID, abort the operation
                 if not update_result:
-                    abort(400, "The record does not exist.")
+                    current_app.logger.debug(
+                        "%s : No record found with given ID in", request.endpoint
+                    )
+                    abort(400, description="The record does not exist.")
 
         return {"message": "Company record updated successfully."}
-
     except (OperationalError, ProgrammingError) as e:
-        return jsonify({"error": str(e)}), 500  # Internal Server Error
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400  # Bad Request
+        current_app.logger.error("Server error: %s, %s", request.endpoint, str(e))
+        return abort(500, description=json.loads(e.json()))  # Internal Server Error
 
 
 class CompanyParams(BaseModel):

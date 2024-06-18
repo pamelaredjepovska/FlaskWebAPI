@@ -15,7 +15,10 @@ def delete_company():
         try:
             args = CompanyParams(**request.args.to_dict())
         except ValidationError as e:
-            abort(400, json.loads(e.json()))
+            current_app.logger.debug(
+                "%s : Validation error in %s", str(e), request.endpoint
+            )
+            abort(400, description=json.loads(e.json()))
 
         # Perform delete operation
         db_pool = current_app.config["db_pool"]
@@ -25,17 +28,19 @@ def delete_company():
             with conn.cursor() as cursor:
                 cursor.execute(delete_query, query_params)
                 if not cursor.fetchone():
+                    current_app.logger.debug(
+                        "%s : This record does not exist or is referenced by another record in",
+                        request.endpoint,
+                    )
                     abort(
                         400,
-                        "Delete unsuccessful. This record does not exist or is referenced by another record.",
+                        description="Delete unsuccessful. This record does not exist or is referenced by another record.",
                     )
 
         return {"message": "Company record deleted successfully."}
     except (OperationalError, ProgrammingError) as e:
-        return jsonify({"error": str(e)}), 500  # Internal Server Error
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400  # Bad Request
+        current_app.logger.error("Server error: %s, %s", request.endpoint, str(e))
+        return abort(500, description=json.loads(e.json()))  # Internal Server Error
 
 
 class CompanyParams(BaseModel):

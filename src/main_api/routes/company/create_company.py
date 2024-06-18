@@ -12,13 +12,16 @@ from src.main_api import main_api_blueprint as bp
 def create_company():
     try:
         if not (json_payload := request.get_json(silent=True)):
-            abort(400, "Missing JSON In Request")
+            abort(400, description="Missing JSON In Request")
 
         # Validate the JSON payload
         try:
             company_data = CompanyInput(**json_payload)
         except ValidationError as e:
-            abort(400, json.loads(e.json()))
+            current_app.logger.debug(
+                "%s : Validation error in %s", str(e), request.endpoint
+            )
+            abort(400, description=json.loads(e.json()))
 
         # Perform insertion query
         db_pool = current_app.config["db_pool"]
@@ -27,19 +30,12 @@ def create_company():
         with get_db_connection(db_pool) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(insert_query, insert_query_params)
-                if not cursor.fetchone():
-                    abort(
-                        400,
-                        "Cannot insert new company record.",
-                    )
 
         return {"message": "Company record inserted successfully."}
 
     except (OperationalError, ProgrammingError) as e:
-        return jsonify({"error": str(e)}), 500  # Internal Server Error
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400  # Bad Request
+        current_app.logger.error("Server error: %s, %s", request.endpoint, str(e))
+        return abort(500, description=json.loads(e.json()))  # Internal Server Error
 
 
 class CompanyInput(BaseModel):

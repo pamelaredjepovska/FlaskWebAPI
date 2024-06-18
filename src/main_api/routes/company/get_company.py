@@ -1,4 +1,6 @@
-from flask import current_app, jsonify
+import json
+
+from flask import abort, current_app, request
 from psycopg import OperationalError, ProgrammingError
 
 from src import get_db_connection
@@ -16,12 +18,12 @@ def get_company():
                 companies = cursor.fetchone()
 
         if not companies:
-            return jsonify({"error": "No companies found"}), 404  # Not Found
+            current_app.logger.debug(
+                "No company records were found at %s", request.endpoint
+            )
+            abort(404, description="No company records were found.")
 
         return companies
 
     except (OperationalError, ProgrammingError) as e:
-        return jsonify({"error": str(e)}), 500  # Internal Server Error
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400  # Bad Request
+        abort(500, description=json.loads(e.json()))  # Internal Server Error
