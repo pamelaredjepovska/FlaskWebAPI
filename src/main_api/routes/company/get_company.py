@@ -1,4 +1,4 @@
-from flask import current_app, g, jsonify, request
+from flask import current_app, jsonify
 from psycopg import OperationalError, ProgrammingError
 
 from src import get_db_connection

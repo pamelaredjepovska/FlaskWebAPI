@@ -1,8 +1,8 @@
-import traceback
+import json
 
 from flask import abort, current_app, jsonify, request
 from psycopg import OperationalError, ProgrammingError
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, ValidationError, conint
 
 from src import get_db_connection
 from src.main_api import main_api_blueprint as bp
@@ -12,7 +12,10 @@ from src.main_api import main_api_blueprint as bp
 def delete_company():
     try:
         # Validate the request arguments
-        args = CompanyParams(**request.args.to_dict())
+        try:
+            args = CompanyParams(**request.args.to_dict())
+        except ValidationError as e:
+            abort(400, json.loads(e.json()))
 
         # Perform delete operation
         db_pool = current_app.config["db_pool"]
@@ -32,7 +35,6 @@ def delete_company():
         return jsonify({"error": str(e)}), 500  # Internal Server Error
 
     except Exception as e:
-        print(traceback.print_exc())
         return jsonify({"error": str(e)}), 400  # Bad Request
 
 

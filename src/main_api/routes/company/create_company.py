@@ -1,8 +1,8 @@
-import traceback
+import json
 
 from flask import abort, current_app, jsonify, request
 from psycopg import OperationalError, ProgrammingError
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, ValidationError, constr
 
 from src import get_db_connection
 from src.main_api import main_api_blueprint as bp
@@ -14,7 +14,11 @@ def create_company():
         if not (json_payload := request.get_json(silent=True)):
             abort(400, "Missing JSON In Request")
 
-        company_data = CompanyInput(**json_payload)
+        # Validate the JSON payload
+        try:
+            company_data = CompanyInput(**json_payload)
+        except ValidationError as e:
+            abort(400, json.loads(e.json()))
 
         # Perform insertion query
         db_pool = current_app.config["db_pool"]
@@ -35,7 +39,6 @@ def create_company():
         return jsonify({"error": str(e)}), 500  # Internal Server Error
 
     except Exception as e:
-        print(traceback.print_exc())
         return jsonify({"error": str(e)}), 400  # Bad Request
 
 
