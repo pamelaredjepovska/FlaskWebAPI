@@ -23,9 +23,13 @@ def create_company():
         with get_db_connection(db_pool) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(insert_query, insert_query_params)
-                insert_result = cursor.fetchone()
+                if not cursor.fetchone():
+                    abort(
+                        400,
+                        "Cannot insert new company record.",
+                    )
 
-        return insert_result
+        return {"message": "Company record inserted successfully."}
 
     except (OperationalError, ProgrammingError) as e:
         return jsonify({"error": str(e)}), 500  # Internal Server Error

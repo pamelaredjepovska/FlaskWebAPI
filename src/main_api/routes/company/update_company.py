@@ -32,7 +32,7 @@ def update_company():
                 if not update_result:
                     abort(400, "The record does not exist.")
 
-        return update_result
+        return {"message": "Company record updated successfully."}
 
     except (OperationalError, ProgrammingError) as e:
         return jsonify({"error": str(e)}), 500  # Internal Server Error
