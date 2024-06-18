@@ -37,7 +37,7 @@ def delete_country():
                         description="Delete unsuccessful. This record does not exist or is referenced by another record.",
                     )
 
-        return {"message": "country record deleted successfully."}
+        return {"message": "Country record deleted successfully."}
     except (OperationalError, ProgrammingError) as e:
         current_app.logger.error("Server error: %s, %s", request.endpoint, str(e))
         return abort(500, description=json.loads(e.json()))  # Internal Server Error
