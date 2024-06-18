@@ -11,6 +11,6 @@ CREATE TABLE company (
 CREATE TABLE contact (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
-    country_id INTEGER REFERENCES country(id),
-    company_id INTEGER REFERENCES company(id)
+    country_id INTEGER REFERENCES country(id) NOT NULL,
+    company_id INTEGER REFERENCES company(id) NOT NULL
 );
