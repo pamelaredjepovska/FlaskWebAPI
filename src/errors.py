@@ -6,7 +6,6 @@ def register_error_handlers(app):
     @app.errorhandler(Exception)
     def handle_exception(e):
         # Pass through HTTP errors
-        print(f"e = {e}")
         if isinstance(e, HTTPException):
             response = e.get_response()
             response.data = jsonify(
