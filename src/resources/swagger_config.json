@@ -29,7 +29,129 @@
                         }
                     }
                 }
+            },
+            "/company": {
+                "get": {
+                  "summary": "Get Company List",
+                  "description": "Retrieve a list of all companies.",
+                  "responses": {
+                    "200": {
+                      "description": "A list of company names.",
+                      "schema": {
+                        "type": "object",
+                        "properties":{
+                            "companies": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                      }
+                    },
+                    "404": {
+                      "description": "No company records were found."
+                    },
+                    "500": {
+                      "description": "Internal Server Error"
+                    }
+                  }
+                },
+                "post": {
+                  "summary": "Create Company",
+                  "description": "Create a new company record.",
+                  "parameters": [
+                    {
+                      "name": "body",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "$ref": "#/definitions/CompanyInput"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Company record inserted successfully."
+                    },
+                    "400": {
+                      "description": "Validation error or missing JSON in request."
+                    },
+                    "500": {
+                      "description": "Internal Server Error"
+                    }
+                  }
+                },
+                "patch": {
+                  "summary": "Update Company",
+                  "description": "Update an existing company record.",
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "query",
+                      "required": true,
+                      "type": "integer",
+                      "description": "ID of the company to update."
+                    },
+                    {
+                      "name": "body",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "$ref": "#/definitions/CompanyInput"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Company record updated successfully."
+                    },
+                    "400": {
+                      "description": "Validation error, missing JSON in request, or record does not exist."
+                    },
+                    "500": {
+                      "description": "Internal Server Error"
+                    }
+                  }
+                },
+                "delete": {
+                  "summary": "Delete Company",
+                  "description": "Delete a company record.",
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "query",
+                      "required": true,
+                      "type": "integer",
+                      "description": "ID of the company to delete."
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "Company record deleted successfully."
+                    },
+                    "400": {
+                      "description": "Validation error, record does not exist, or is referenced by another record."
+                    },
+                    "500": {
+                      "description": "Internal Server Error"
+                    }
+                  }
+                }
+            } 
+        },
+        "definitions": {
+            "CompanyInput": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Name of the company"
+                }
+              },
+              "required": ["name"]
             }
-        }
+          }
     }
 ]
