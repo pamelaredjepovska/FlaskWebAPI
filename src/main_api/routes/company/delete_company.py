@@ -1,6 +1,6 @@
 import json
 
-from flask import abort, current_app, jsonify, request
+from flask import abort, current_app, request
 from psycopg import OperationalError, ProgrammingError
 from pydantic import BaseModel, ValidationError, conint
 
