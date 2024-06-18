@@ -247,7 +247,498 @@
                   }
                 }
               }
-          } 
+          },
+          "/country/stats": {
+            "get": {
+              "summary": "Get statistics about companies in a specific country",
+              "parameters": [
+                {
+                  "name": "country",
+                  "in": "query",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": "Name of the country to get statistics for"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful response with statistics data",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "company": {
+                              "type": "string"
+                            },
+                            "num_of_contacts": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request. Invalid input parameters",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ValidationError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Validation error message details"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "No statistics records found for the requested country",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "NotFoundError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "No statistics records were found for the requested country."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Internal server error",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "OperationalError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Database connection error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/contact": {
+            "get": {
+              "summary": "Get all contacts",
+              "responses": {
+                "200": {
+                  "description": "Successful response with contact records",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "contacts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "integer"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "country": {
+                                  "type": "string"
+                                },
+                                "company": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "No contact records found."
+                },
+                "500": {
+                  "description": "Internal Server Error"
+                }
+              }
+            },
+            "post": {
+              "summary": "Create a new contact",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        },
+                        "company": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["name", "country", "company"]
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Successful response indicating contact creation",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request. Missing or invalid JSON payload",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ValidationError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Validation error message details"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Internal server error",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "OperationalError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Database connection error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "delete": {
+              "summary": "Delete a contact by ID",
+              "parameters": [
+                {
+                  "name": "id",
+                  "in": "query",
+                  "required": true,
+                  "schema": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "description": "ID of the contact to delete"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful response indicating contact deletion",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request. Invalid input parameters",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ValidationError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Validation error message details"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Internal server error",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "OperationalError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Database connection error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "patch": {
+              "summary": "Update a contact by ID",
+              "parameters": [
+                {
+                  "name": "id",
+                  "in": "query",
+                  "required": true,
+                  "schema": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "description": "ID of the contact to update"
+                }
+              ],
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        },
+                        "company": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Successful response indicating contact update",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request. Missing or invalid JSON payload",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ValidationError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Validation error message details"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "500": {
+                  "description": "Internal server error",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "OperationalError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Database connection error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "/contact/filter": {
+            "get": {
+              "summary": "Filter contacts",
+              "parameters": [
+                {
+                  "name": "country",
+                  "in": "query",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": "Name of the country to filter contacts by"
+                },
+                {
+                  "name": "company",
+                  "in": "query",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": "Name of the company to filter contacts by"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful response with filtered contact records",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "country": {
+                              "type": "string"
+                            },
+                            "company": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request. Invalid input parameters",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "ValidationError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Validation error message details"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "404": {
+                  "description": "No contact records found for the specified filter"
+                },
+                "500": {
+                  "description": "Internal server error",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "type": "string",
+                            "example": "OperationalError"
+                          },
+                          "detail": {
+                            "type": "string",
+                            "example": "Database connection error"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         "definitions": {
             "CompanyInput": {
